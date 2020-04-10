@@ -9,12 +9,27 @@
         android:id="@+id/navigation_news"
         android:name="com.news.ui.news.NewsFragment"
         android:label="@string/title_New"
-        tools:layout="@layout/fragment_new" />
+        tools:layout="@layout/fragment_new">
+
+        <action
+            android:id="@+id/action_newsFragment_to_contentFragment"
+            app:destination="@id/contentFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_popular"
         android:name="com.news.ui.popular.PopularFragment"
         android:label="@string/title_Popular"
-        tools:layout="@layout/fragment_popular" />
+        tools:layout="@layout/fragment_popular">
+
+        <action
+            android:id="@+id/action_popularFragment_to_contentFragment"
+            app:destination="@id/contentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/contentFragment"
+        android:name="com.news.ui.content.ContentFragment"
+        android:label="Content" />
 
 </navigation>

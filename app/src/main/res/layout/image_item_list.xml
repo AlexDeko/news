@@ -10,14 +10,17 @@
     app:layout_constraintTop_toTopOf="parent"
     card_view:cardCornerRadius="24dp"
     android:background="@color/colorPrimary"
-    card_view:cardUseCompatPadding="true">
+    card_view:cardUseCompatPadding="true"
+    android:layout_margin="@dimen/activity_horizontal_margin"
+    >
 
-    <ImageView
+    <ImageButton
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="139dp"
         tools:layout_editor_absoluteY="106dp"
-        tools:src="@drawable/ic_no_internet"/>
+        tools:src="@drawable/ic_no_internet"
+        android:padding="20dp"/>
 
 </androidx.cardview.widget.CardView>
