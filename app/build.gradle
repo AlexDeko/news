@@ -58,6 +58,20 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation("io.reactivex.rxjava2:rxkotlin:2.3.0")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.12")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    implementation("com.squareup.retrofit2:retrofit:2.7.1")
+    implementation("com.squareup.retrofit2:adapter-rxjava2:2.5.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.5.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.3.1")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("com.github.bumptech.glide:glide:4.11.0")
+    // di
+    implementation("org.koin:koin-android:2.0.1")
+    implementation("org.koin:koin-android-viewmodel:2.0.1")
+    implementation("org.koin:koin-androidx-scope:2.0.1")
+
 
 //test
     testImplementation 'junit:junit:4.12'

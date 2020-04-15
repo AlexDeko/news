@@ -4,47 +4,124 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.ContentLoadingProgressBar
+import android.widget.Toast
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.Navigation
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import com.news.R
+import com.news.client.PopularPhotosApi
+import com.news.data.adapters.NewsRecyclerAdapter
+import com.news.data.dto.News
+import com.news.data.dto.Photos
+import com.news.ui.news.NewsViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_popular.*
+import kotlinx.android.synthetic.main.fragment_popular.error_no_internet
+import kotlinx.android.synthetic.main.fragment_popular.indeterminateBar
+import kotlinx.coroutines.*
+import org.koin.android.ext.android.get
 
 class PopularFragment : Fragment() {
 
-    private lateinit var popularViewModel: PopularViewModel
+    private var list: Photos? = null
+
+    companion object
+
+    var page: Int = 1
+    val news: MutableList<News>? = arrayListOf()
+    private var noEmptyList = false
+    private val photos: PopularPhotosApi = get()
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        popularViewModel =
-                ViewModelProviders.of(this).get(PopularViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_popular, container, false)
-        navigate()
-        val indeterminateBar: ContentLoadingProgressBar = root.findViewById(R.id.indeterminateBar)
-        with(indeterminateBar) {
-            hide()
-        }
+       // homeViewModel =
+    //        ViewModelProviders.of(this).get(NewsViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_new, container, false)
 
-        val swipeRefreshLayout: SwipeRefreshLayout = root.findViewById(R.id.swipeRefresh)
-        swipeRefreshLayout.setOnRefreshListener {
 
-            swipeRefreshLayout.isRefreshing = false
-        }
-//        val textView: TextView = root.findViewById(R.id.text_dashboard)
-//        dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
-//            textView.text = it
-//        })
+
         return root
     }
 
-    private fun navigate() {
-        Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-            .navigate(R.id.action_popularFragment_to_contentFragment)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        fetchData()
+        setList()
+
+        //  val swipeRefreshLayout: SwipeRefreshLayout = root.findViewById(R.id.swipeRefresh)
+        with(swipeRefresh) {
+            setOnRefreshListener {
+                page = 1
+                news?.clear()
+                fetchData()
+                notifyDataChangeAdapter()
+                isRefreshing = false
+            }
+        }
+        super.onViewCreated(view, savedInstanceState)
+
+    }
+
+    private fun setList() {
+        with(recyclerListPopular) {
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = NewsRecyclerAdapter(context.applicationContext, news!!)
+        }
+        noEmptyList = true
+    }
+
+
+    private fun fetchData() {
+        progressShow()
+
+        photos.getPhotos(page).repeatUntil {
+            false
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                it.list?.let { it1 -> news?.addAll(it1) }
+                if (noEmptyList) notifyDataChangeAdapter()
+            }, {
+                setErrorNoInternet()
+                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+            })
+            .addTo(compositeDisposable)
+        page++
+        progressHide()
+    }
+
+    private fun notifyDataChangeAdapter() {
+        recyclerListPopular.adapter?.notifyDataSetChanged()
+    }
+
+    private fun progressShow() {
+        indeterminateBar.show()
+    }
+
+    private fun progressHide() {
+        indeterminateBar.hide()
+    }
+
+    private fun setErrorNoInternet() {
+        indeterminateBar.hide()
+        error_no_internet.setImageResource(R.drawable.ic_no_internet)
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        compositeDisposable.clear()
+    }
+
+    @InternalCoroutinesApi
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }
