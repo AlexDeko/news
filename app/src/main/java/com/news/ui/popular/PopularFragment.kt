@@ -26,7 +26,7 @@ import org.koin.android.ext.android.get
 
 class PopularFragment : Fragment() {
 
-    private var list: Photos? = null
+   // private var list: Photos? = null
 
     companion object
 

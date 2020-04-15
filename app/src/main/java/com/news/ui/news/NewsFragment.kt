@@ -25,7 +25,7 @@ import org.koin.android.ext.android.get
 
 class NewsFragment() : Fragment() {
 
-    private var list: Photos? = null
+   // private var list: Photos? = null
     companion object var page: Int = 1
     val news: MutableList<News>? = arrayListOf()
     private var noEmptyList = false
@@ -86,10 +86,29 @@ class NewsFragment() : Fragment() {
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                         super.onScrollStateChanged(recyclerView, newState)
                       //  val totalItemCount = layoutManager?.itemCount
+                     //   val layoutManager =
+//                            GridLayoutManager::class.java.cast(recyclerView.layoutManager)
+//                        val visibleItemCount = layoutManager?.childCount
+//                        val totalItemCount = layoutManager?.itemCount
+//                        val pastVisibleItems = layoutManager?.findFirstCompletelyVisibleItemPosition()
+//
+//                        if(pastVisibleItems+visibleItemCount >= totalItemCount){
+//
+//                        }
 
-                        if (scrollState == RecyclerView.SCROLL_STATE_IDLE) isEndScrolling = true
+                        if (!recyclerView.canScrollVertically(1)
+                            && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            isEndScrolling = true
+
+                        }
+
 
                     }
+//                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                        super.onScrolled(recyclerView!!, dx, dy)
+//
+//
+//                    }
                 }
 
                addOnScrollListener(scrollListener)

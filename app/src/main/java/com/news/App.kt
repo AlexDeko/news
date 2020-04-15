@@ -32,6 +32,11 @@ class App : Application(){
 val networkModule = module {
 
     single {
+        OkHttpClient.Builder()
+            .build()
+    }
+
+    single {
         Retrofit.Builder()
             .baseUrl("http://gallery.dev.webant.ru")
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
