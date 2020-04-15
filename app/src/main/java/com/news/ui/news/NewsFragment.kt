@@ -33,30 +33,17 @@ class NewsFragment() : Fragment() {
     private val photos: PhotosApi = get()
     private val compositeDisposable = CompositeDisposable()
 
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-      //  homeViewModel =
-      //          ViewModelProviders.of(this).get(NewsViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_new, container, false)
-//        fetchData()
-//        setList()
-//
-//        val swipeRefreshLayout: SwipeRefreshLayout = root.findViewById(R.id.swipeRefresh)
-//        swipeRefreshLayout.setOnRefreshListener {
-//            page = 1
-//            news?.clear()
-//            fetchData()
-//            notifyDataChangeAdapter()
-//            swipeRefreshLayout.isRefreshing = false
-//        }
-
-
         return root
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         fetchData()
         setList()
@@ -71,7 +58,6 @@ class NewsFragment() : Fragment() {
             }
         }
         super.onViewCreated(view, savedInstanceState)
-
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -79,14 +65,14 @@ class NewsFragment() : Fragment() {
 
 
             with(recyclerList) {
-                layoutManager = GridLayoutManager(context,2)
+                layoutManager = GridLayoutManager(requireContext(),2)
                 adapter = NewsRecyclerAdapter(context.applicationContext, news!!)
 
                 val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                         super.onScrollStateChanged(recyclerView, newState)
-                      //  val totalItemCount = layoutManager?.itemCount
-                     //   val layoutManager =
+                        //  val totalItemCount = layoutManager?.itemCount
+                        //   val layoutManager =
 //                            GridLayoutManager::class.java.cast(recyclerView.layoutManager)
 //                        val visibleItemCount = layoutManager?.childCount
 //                        val totalItemCount = layoutManager?.itemCount
@@ -99,7 +85,7 @@ class NewsFragment() : Fragment() {
                         if (!recyclerView.canScrollVertically(1)
                             && newState == RecyclerView.SCROLL_STATE_IDLE) {
                             isEndScrolling = true
-
+                            fetchData()
                         }
 
 
@@ -110,11 +96,9 @@ class NewsFragment() : Fragment() {
 //
 //                    }
                 }
-
                addOnScrollListener(scrollListener)
-                
             }
-
+        noEmptyList = true
     }
 
 

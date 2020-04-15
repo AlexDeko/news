@@ -22,7 +22,7 @@ class NewsRecyclerAdapter(val context: Context, val list: MutableList<News>) :
 
     override fun getItemCount() = list.size
 
-    //override fun getItemId(position: Int) = list[position].id
+    override fun getItemId(position: Int) = list[position].id.toLong()
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         with(holder as BaseViewHolder) {
