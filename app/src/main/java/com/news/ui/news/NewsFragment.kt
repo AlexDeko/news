@@ -93,7 +93,7 @@ class NewsFragment() : Fragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                it.list?.let { it1 -> news?.addAll(it1) }
+                it.list?.let {it1 -> news?.addAll(it1) }
                 if (noEmptyList) notifyDataChangeAdapter()
                 page++
             }, {

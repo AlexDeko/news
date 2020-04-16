@@ -32,12 +32,6 @@ class ContentFragment : Fragment(), CoroutineScope by MainScope() {
         return inflater.inflate(R.layout.content_fragment, container, false)
     }
 
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//        viewModel = ViewModelProviders.of(this).get(ContentViewModel::class.java)
-//        // TODO: Use the ViewModel
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setContent()
         super.onViewCreated(view, savedInstanceState)
@@ -46,22 +40,19 @@ class ContentFragment : Fragment(), CoroutineScope by MainScope() {
     private fun setContent() {
         var url = "http://gallery.dev.webant.ru/media/"
         arguments?.let {
-            it.getString("url")
             url += it.getString("file")
             titleContentNews.text = it.getString("name")
             text.text = it.getString("description")
         }
 
-
         try {
                 Glide.with(this)
-                    .asBitmap()
                     .load(url)
+                    .placeholder(R.drawable.ic_launcher_background)
                     .into(contentNewsImageView)
 
         } catch (e: Exception) {
             Toast.makeText(context, R.string.errorContent, Toast.LENGTH_SHORT).show()
         }
     }
-
 }

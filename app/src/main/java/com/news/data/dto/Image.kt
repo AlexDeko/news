@@ -1,6 +1,10 @@
 package com.news.data.dto
 
+import com.google.gson.annotations.SerializedName
+
 class Image(
-    private val id: Int,
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("name")
     val name: String) {
 }

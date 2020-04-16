@@ -25,7 +25,6 @@ class NewsViewHolder(adapter: NewsRecyclerAdapter, view: View) : BaseViewHolder(
                         Navigation.createNavigateOnClickListener(
                             R.id.action_popularFragment_to_contentFragment,
                             Bundle().apply {
-                                putString("url", adapter.list[adapterPosition].id.toString())
                                 putString("file", adapter.list[adapterPosition].image?.name)
                                 putString("name", adapter.list[adapterPosition].name)
                                 putString("description", adapter.list[adapterPosition].description)
@@ -33,7 +32,6 @@ class NewsViewHolder(adapter: NewsRecyclerAdapter, view: View) : BaseViewHolder(
                     else Navigation.createNavigateOnClickListener(
                         R.id.action_newsFragment_to_contentFragment,
                         Bundle().apply {
-                            putString("url", adapter.list[adapterPosition].id.toString())
                             putString("file", adapter.list[adapterPosition].image?.name)
                             putString("name", adapter.list[adapterPosition].name)
                             putString("description", adapter.list[adapterPosition].description)
@@ -47,7 +45,10 @@ class NewsViewHolder(adapter: NewsRecyclerAdapter, view: View) : BaseViewHolder(
 
     override fun bind(news: News) {
         with(itemView) {
-
+            Glide.with(adapter.context)
+                .load("https://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name}")
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(imageView)
 
 
         }
