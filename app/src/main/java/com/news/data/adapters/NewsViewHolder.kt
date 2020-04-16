@@ -15,8 +15,8 @@ class NewsViewHolder(adapter: NewsRecyclerAdapter, view: View) : BaseViewHolder(
     init {
         with(itemView) {
             Glide.with(adapter.context)
-                .asBitmap()
-                .load("http://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name}")
+                .load("https://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name}")
+                .placeholder(R.drawable.ic_launcher_background)
                 .into(imageView)
 
             imageView.setOnClickListener {
