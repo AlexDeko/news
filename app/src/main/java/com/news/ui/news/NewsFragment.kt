@@ -71,30 +71,12 @@ class NewsFragment() : Fragment() {
                 val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                         super.onScrollStateChanged(recyclerView, newState)
-                        //  val totalItemCount = layoutManager?.itemCount
-                        //   val layoutManager =
-//                            GridLayoutManager::class.java.cast(recyclerView.layoutManager)
-//                        val visibleItemCount = layoutManager?.childCount
-//                        val totalItemCount = layoutManager?.itemCount
-//                        val pastVisibleItems = layoutManager?.findFirstCompletelyVisibleItemPosition()
-//
-//                        if(pastVisibleItems+visibleItemCount >= totalItemCount){
-//
-//                        }
 
-                        if (!recyclerView.canScrollVertically(1)
-                            && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
                             isEndScrolling = true
                             fetchData()
                         }
-
-
                     }
-//                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                        super.onScrolled(recyclerView!!, dx, dy)
-//
-//
-//                    }
                 }
                addOnScrollListener(scrollListener)
             }

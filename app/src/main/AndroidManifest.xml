@@ -15,7 +15,6 @@
         android:theme="@style/AppTheme"
 
         tools:ignore="GoogleAppIndexingWarning"
-        android:usesCleartextTraffic="true"
         tools:targetApi="m">
 
         <activity

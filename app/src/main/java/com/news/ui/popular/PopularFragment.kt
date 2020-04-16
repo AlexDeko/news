@@ -15,8 +15,6 @@ import com.news.R
 import com.news.client.PopularPhotosApi
 import com.news.data.adapters.NewsRecyclerAdapter
 import com.news.data.dto.News
-import com.news.data.dto.Photos
-import com.news.ui.news.NewsViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -29,8 +27,6 @@ import org.koin.android.ext.android.get
 
 class PopularFragment : Fragment() {
 
-   // private var list: Photos? = null
-
     var page: Int = 1
     val news: MutableList<News>? = arrayListOf()
     private var noEmptyList = false
@@ -42,7 +38,7 @@ class PopularFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_new, container, false)
+        val root = inflater.inflate(R.layout.fragment_popular, container, false)
         return root
     }
 
@@ -67,18 +63,16 @@ class PopularFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setList() {
         with(recyclerListPopular) {
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            layoutManager = GridLayoutManager(context, 2)
             adapter = NewsRecyclerAdapter(requireContext(), news!!)
 
             val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
 
-                    if (!recyclerView.canScrollVertically(1)
-                        && newState == RecyclerView.SCROLL_STATE_IDLE
+                    if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE
                     ) {
                         fetchData()
-
                     }
                 }
             }

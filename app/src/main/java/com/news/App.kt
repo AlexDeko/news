@@ -38,7 +38,7 @@ val networkModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("http://gallery.dev.webant.ru")
+            .baseUrl("https://gallery.dev.webant.ru")
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .client(get<OkHttpClient>())

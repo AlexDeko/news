@@ -45,27 +45,21 @@ class ContentFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun setContent() {
         var url = "http://gallery.dev.webant.ru/media/"
-        var name: String? = null
-        var description: String? = null
+        arguments?.let {
+            it.getString("url")
+            url += it.getString("file")
+            titleContentNews.text = it.getString("name")
+            text.text = it.getString("description")
+        }
+
+
         try {
-            val arguments =  activity?.intent?.extras
-            if (arguments != null) {
-
-                url += arguments["Url"].toString()
-
                 Glide.with(this)
                     .asBitmap()
                     .load(url)
                     .into(contentNewsImageView)
 
-                name = arguments["Name"].toString()
-                description = arguments["Description"].toString()
-            }
-            titleContentNews.text = name
-            text.text = description
-           // contentNewsImageView.setImageURI(Uri.parse(url))
         } catch (e: Exception) {
-
             Toast.makeText(context, R.string.errorContent, Toast.LENGTH_SHORT).show()
         }
     }

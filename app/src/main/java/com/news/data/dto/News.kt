@@ -8,7 +8,7 @@ data class News(
     val description: String? = null,
     val typeNew: Boolean? = null,
     val typePopular: Boolean? = null,
-    private val image: Image? = null,
+    val image: Image? = null,
     private val user: String? = null
 
 ) {
