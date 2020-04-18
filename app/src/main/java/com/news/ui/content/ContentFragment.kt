@@ -19,12 +19,6 @@ import kotlinx.coroutines.MainScope
 
 class ContentFragment : Fragment(), CoroutineScope by MainScope() {
 
-    companion object {
-        fun newInstance() = ContentFragment()
-    }
-
-    private lateinit var viewModel: ContentViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,9 +34,9 @@ class ContentFragment : Fragment(), CoroutineScope by MainScope() {
     private fun setContent() {
         var url = "http://gallery.dev.webant.ru/media/"
         arguments?.let {
-            url += it.getString("file")
-            titleContentNews.text = it.getString("name")
-            text.text = it.getString("description")
+            url = "http://gallery.dev.webant.ru/media/${it.getString("file").toString()}"
+            titleContentNews.text = it.getString("name").toString()
+            text.text = it.getString("description").toString()
         }
 
         try {

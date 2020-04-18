@@ -13,12 +13,15 @@ class NewsRecyclerAdapter(val context: Context, val list: MutableList<News>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        NewsViewHolder(this,
+        NewsViewHolder(
+            this,
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.image_item_list, parent,
-                false
-            )
+                .inflate(
+                    R.layout.image_item_list, parent,
+                    false
+                )
         )
+
 
     override fun getItemCount() = list.size
 

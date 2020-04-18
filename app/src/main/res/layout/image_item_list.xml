@@ -21,6 +21,6 @@
         tools:layout_editor_absoluteX="139dp"
         tools:layout_editor_absoluteY="106dp"
         tools:src="@drawable/ic_no_internet"
-        android:padding="20dp"/>
+        />
 
 </androidx.cardview.widget.CardView>

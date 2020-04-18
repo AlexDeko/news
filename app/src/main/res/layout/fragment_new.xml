@@ -32,7 +32,8 @@
         android:id="@+id/error_no_internet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:src="@drawable/ic_no_internet"/>
+        android:src="@drawable/ic_no_internet"
+        android:visibility="invisible"/>
 
     <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/indeterminateBar"

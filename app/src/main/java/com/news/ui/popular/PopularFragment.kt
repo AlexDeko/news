@@ -27,7 +27,8 @@ import org.koin.android.ext.android.get
 
 class PopularFragment : Fragment() {
 
-    var page: Int = 1
+    private var page: Int = 1
+    private var countItems = 10
     val news: MutableList<News>? = arrayListOf()
     private var noEmptyList = false
     private val photos: PopularPhotosApi = get()
@@ -44,7 +45,8 @@ class PopularFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        fetchData()
+
+        //fetchData()
         setList()
 
         with(swipeRefresh) {
@@ -67,11 +69,21 @@ class PopularFragment : Fragment() {
             adapter = NewsRecyclerAdapter(requireContext(), news!!)
 
             val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
 
-                    if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE
-                    ) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+//                    if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE
+//                    ) {
+//                        fetchData()
+//                    }
+
+                    val manage: GridLayoutManager =
+                        recyclerView.layoutManager as GridLayoutManager
+                    manage.findLastVisibleItemPosition()
+
+                    if (manage.findLastVisibleItemPosition() >= manage.itemCount - 1) {
+                        page++
                         fetchData()
                     }
                 }
@@ -93,12 +105,14 @@ class PopularFragment : Fragment() {
             .subscribe({
                 it.list?.let { it1 -> news?.addAll(it1) }
                 if (noEmptyList) notifyDataChangeAdapter()
-                page++
+
+                error_no_internet.visibility = View.INVISIBLE
             }, {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
             .addTo(compositeDisposable)
+
         progressHide()
     }
 
@@ -116,7 +130,7 @@ class PopularFragment : Fragment() {
 
     private fun setErrorNoInternet() {
         indeterminateBar.hide()
-        error_no_internet.setImageResource(R.drawable.ic_no_internet)
+        error_no_internet.visibility = View.VISIBLE
 
     }
 

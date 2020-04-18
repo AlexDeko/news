@@ -14,7 +14,6 @@ import com.news.R
 import com.news.client.PhotosApi
 import com.news.data.adapters.NewsRecyclerAdapter
 import com.news.data.dto.News
-import com.news.data.dto.Photos
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -26,12 +25,15 @@ import org.koin.android.ext.android.get
 class NewsFragment() : Fragment() {
 
    // private var list: Photos? = null
-    companion object var page: Int = 1
+    private var page: Int = 1
+    private var countItems = 10
     val news: MutableList<News>? = arrayListOf()
     private var noEmptyList = false
     private var isEndScrolling = false
+    private var updateData = false
     private val photos: PhotosApi = get()
     private val compositeDisposable = CompositeDisposable()
+
 
 
     override fun onCreateView(
@@ -68,12 +70,24 @@ class NewsFragment() : Fragment() {
                 layoutManager = GridLayoutManager(requireContext(),2)
                 adapter = NewsRecyclerAdapter(context.applicationContext, news!!)
 
-                val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
-                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                        super.onScrollStateChanged(recyclerView, newState)
+                //adapter.it = page * countItems
 
-                        if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                            isEndScrolling = true
+                val scrollListener = object : RecyclerView.OnScrollListener() {
+
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
+
+//                        if (!recyclerView.canScrollVertically(1)) {
+//                            fetchData()
+//                        }
+
+                        val manage: GridLayoutManager =
+                            recyclerView.layoutManager as GridLayoutManager
+                        manage.findLastVisibleItemPosition()
+
+                        if (manage.findLastVisibleItemPosition() >= manage.itemCount - 1) {
+                            page++
+
                             fetchData()
                         }
                     }
@@ -85,6 +99,7 @@ class NewsFragment() : Fragment() {
 
 
     private fun fetchData() {
+
         progressShow()
 
         photos.getPhotos(page).repeatUntil {
@@ -93,16 +108,20 @@ class NewsFragment() : Fragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                it.list?.let {it1 -> news?.addAll(it1) }
+
+                it.list?.let { it1 -> news?.addAll(it1) }
                 if (noEmptyList) notifyDataChangeAdapter()
-                page++
+                error_no_internet.visibility = View.INVISIBLE
+
             }, {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
+
             .addTo(compositeDisposable)
 
         progressHide()
+
     }
 
     private fun notifyDataChangeAdapter() {
@@ -119,7 +138,7 @@ class NewsFragment() : Fragment() {
 
     private fun setErrorNoInternet() {
             indeterminateBar.hide()
-            error_no_internet.setImageResource(R.drawable.ic_no_internet)
+            error_no_internet.visibility = View.VISIBLE
 
     }
 
@@ -132,4 +151,5 @@ class NewsFragment() : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
     }
+
 }
