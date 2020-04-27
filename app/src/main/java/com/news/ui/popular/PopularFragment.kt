@@ -19,6 +19,7 @@ import com.news.client.PopularPhotosApi
 import com.news.data.adapters.NewsRecyclerAdapter
 import com.news.data.dto.News
 import com.news.ui.BaseFragment
+import com.news.utils.InternetСonnection
 import com.news.utils.Utils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -109,21 +110,23 @@ class PopularFragment : BaseFragment() {
     private fun fetchData() {
         changeProgressState(true)
 
-        photos.getPhotos(page)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doFinally {
-                changeProgressState(false)
-            }
-            .subscribe({
-                it.news?.let { it1 -> news.addAll(it1) }
-                notifyDataChangeAdapter()
-                error_no_internet.visibility = View.INVISIBLE
-            }, {
-                setErrorNoInternet()
-                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
-            })
-            .addTo(compositeDisposable)
+        if (InternetСonnection.isConnect(requireContext())) {
+            photos.getPhotos(page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doFinally {
+                    changeProgressState(false)
+                }
+                .subscribe({ photos ->
+                    photos.news?.let { news.addAll(it) }
+                    notifyDataChangeAdapter()
+                    error_no_internet.visibility = View.INVISIBLE
+                }, {
+
+                    Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+                })
+                .addTo(compositeDisposable)
+        } else setErrorNoInternet()
 
         changeProgressState(false)
     }
