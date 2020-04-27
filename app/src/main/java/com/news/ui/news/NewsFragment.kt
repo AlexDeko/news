@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.news.R
@@ -62,7 +64,13 @@ class NewsFragment() : Fragment() {
     private fun setList() {
         with(recyclerList) {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = NewsRecyclerAdapter(news)
+            adapter = NewsRecyclerAdapter(news) { news ->
+                navigate(
+                    news.image?.name.orEmpty(),
+                    news.name.orEmpty(),
+                    news.description.orEmpty()
+                )
+            }
             val scrollListener = object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -80,6 +88,7 @@ class NewsFragment() : Fragment() {
     }
 
     fun navigate(file: String, name: String, descriptions: String) {
+
 
         findNavController()
             .navigate(R.id.action_newsFragment_to_contentFragment, Bundle().apply {
@@ -114,7 +123,7 @@ class NewsFragment() : Fragment() {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
-         .addTo(compositeDisposable)
+            .addTo(compositeDisposable)
 
         changeProgressState(false)
 

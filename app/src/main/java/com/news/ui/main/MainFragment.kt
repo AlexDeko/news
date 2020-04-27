@@ -34,9 +34,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-
         NavigationUI.setupWithNavController(nav_view, navController)
-
         super.onViewCreated(view, savedInstanceState)
     }
 

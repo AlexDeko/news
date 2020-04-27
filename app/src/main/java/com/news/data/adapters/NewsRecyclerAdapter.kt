@@ -11,7 +11,7 @@ import com.news.ui.news.NewsFragment
 import com.news.ui.popular.PopularFragment
 import kotlinx.android.synthetic.main.image_item_list.view.*
 
-class NewsRecyclerAdapter(val list: MutableList<News>) :
+class NewsRecyclerAdapter(val list: MutableList<News>, private val onItemClick: (News) -> Unit) :
     RecyclerView.Adapter<NewsRecyclerAdapter.NewsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsRecyclerAdapter.NewsViewHolder =
@@ -21,24 +21,26 @@ class NewsRecyclerAdapter(val list: MutableList<News>) :
                 .inflate(
                     R.layout.image_item_list, parent,
                     false
-                )
+                ),
+            onItemClick = onItemClick
         )
 
-    inner class NewsViewHolder(private val adapter: NewsRecyclerAdapter, view: View) :
+    class NewsViewHolder(private val adapter: NewsRecyclerAdapter, view: View, onItemClick: (News) -> Unit) :
         RecyclerView.ViewHolder(view) {
         init {
             itemView.imageView.setOnClickListener {
-                if (view.context == NewsFragment().context)
-                    NewsFragment().navigate(
-                        adapter.list[adapterPosition].image?.name!!,
-                        adapter.list[adapterPosition].name!!,
-                        adapter.list[adapterPosition].description!!
-                    )
-                else PopularFragment().navigate(
-                    adapter.list[adapterPosition].image?.name!!,
-                    adapter.list[adapterPosition].name!!,
-                    adapter.list[adapterPosition].description!!
-                )
+                onItemClick(adapter.list[adapterPosition])
+
+//                    NewsFragment().navigate(
+//                        adapter.list[adapterPosition].image?.name!!,
+//                        adapter.list[adapterPosition].name!!,
+//                        adapter.list[adapterPosition].description!!
+//                    )
+//                 PopularFragment().navigate(
+//                    adapter.list[adapterPosition].image?.name!!,
+//                    adapter.list[adapterPosition].name!!,
+//                    adapter.list[adapterPosition].description!!
+//                )
             }
 
         }

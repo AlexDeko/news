@@ -67,7 +67,13 @@ class PopularFragment : Fragment() {
     private fun setList() {
         with(recyclerListPopular) {
             layoutManager = GridLayoutManager(context, 2)
-            adapter = NewsRecyclerAdapter(news)
+            adapter = NewsRecyclerAdapter(news) { news ->
+                navigate(
+                    news.image?.name.orEmpty(),
+                    news.name.orEmpty(),
+                    news.description.orEmpty()
+                )
+            }
 
             val scrollListener: RecyclerView.OnScrollListener =
                 object : RecyclerView.OnScrollListener() {
@@ -90,7 +96,7 @@ class PopularFragment : Fragment() {
         }
     }
 
-    fun navigate(file: String, name: String, descriptions: String) {
+    private fun navigate(file: String, name: String, descriptions: String) {
 
         findNavController()
             .navigate(R.id.action_popularFragment_to_contentFragment, Bundle().apply {
@@ -118,7 +124,7 @@ class PopularFragment : Fragment() {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
-        .addTo(compositeDisposable)
+            .addTo(compositeDisposable)
 
         changeProgressState(false)
     }
