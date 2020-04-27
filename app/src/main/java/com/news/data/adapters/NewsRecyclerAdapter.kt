@@ -17,7 +17,7 @@ class NewsRecyclerAdapter(val list: MutableList<News>, private val onItemClick: 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): NewsRecyclerAdapter.NewsViewHolder =
+    ): NewsViewHolder =
         NewsViewHolder(
             this,
             LayoutInflater.from(parent.context)
