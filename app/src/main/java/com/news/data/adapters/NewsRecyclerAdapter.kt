@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.news.R
 import com.news.data.dto.News
-import com.news.data.navigate.Navigate
+import com.news.ui.news.NewsFragment
+import com.news.ui.popular.PopularFragment
 import kotlinx.android.synthetic.main.image_item_list.view.*
 
 class NewsRecyclerAdapter(val list: MutableList<News>) :
@@ -27,19 +28,25 @@ class NewsRecyclerAdapter(val list: MutableList<News>) :
         RecyclerView.ViewHolder(view) {
         init {
             with(itemView) {
-
                 imageView.setOnClickListener {
-                    Navigate.navigate(
-                        adapter.list[adapterPosition].image?.name!!, adapter.list[adapterPosition].name!!,
-                    adapter.list[adapterPosition].description!! )
-
+                    if (view.context == NewsFragment().context)
+                        NewsFragment().navigate(
+                            adapter.list[adapterPosition].image?.name!!,
+                            adapter.list[adapterPosition].name!!,
+                            adapter.list[adapterPosition].description!!
+                        )
+                    else PopularFragment().navigate(
+                        adapter.list[adapterPosition].image?.name!!,
+                        adapter.list[adapterPosition].name!!,
+                        adapter.list[adapterPosition].description!!
+                    )
                 }
             }
         }
 
         fun bind(news: News) {
             with(itemView) {
-                Glide.with(itemView.context)
+                Glide.with(context)
                     .load("https://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name.toString()}")
                     .placeholder(R.drawable.ic_launcher_background)
                     .into(imageView)
@@ -51,7 +58,7 @@ class NewsRecyclerAdapter(val list: MutableList<News>) :
 
     override fun getItemId(position: Int) = list[position].id.toLong()
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder , position: Int) {
         holder as NewsViewHolder
         holder.bind(list[position])
 

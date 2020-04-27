@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.isVisible
 
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.news.R
@@ -28,8 +30,7 @@ import org.koin.android.ext.android.get
 class PopularFragment : Fragment() {
 
     private var page: Int = 1
-    private var countItems = 10
-    val news: MutableList<News>? = arrayListOf()
+    val news: MutableList<News> = arrayListOf()
     private var noEmptyList = false
     private val photos: PopularPhotosApi = get()
     private val compositeDisposable = CompositeDisposable()
@@ -46,13 +47,13 @@ class PopularFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        //fetchData()
+        fetchData()
         setList()
 
         with(swipeRefresh) {
             setOnRefreshListener {
                 page = 1
-                news?.clear()
+                news.clear()
                 fetchData()
                 notifyDataChangeAdapter()
                 isRefreshing = false
@@ -66,17 +67,14 @@ class PopularFragment : Fragment() {
     private fun setList() {
         with(recyclerListPopular) {
             layoutManager = GridLayoutManager(context, 2)
-            adapter = NewsRecyclerAdapter( news!!)
+            adapter = NewsRecyclerAdapter( news)
 
             val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
 
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
-//                    if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE
-//                    ) {
-//                        fetchData()
-//                    }
+
 
                     val layoutManager: GridLayoutManager =
                         recyclerView.layoutManager as GridLayoutManager
@@ -91,7 +89,16 @@ class PopularFragment : Fragment() {
             }
             addOnScrollListener(scrollListener)
         }
-       // noEmptyList = true
+    }
+
+    fun navigate(file: String, name: String, descriptions: String){
+
+        findNavController()
+            .navigate(R.id.action_popularFragment_to_contentFragment, Bundle().apply {
+                putString("file", file)
+                putString("name", name)
+                putString("description", descriptions)
+            })
     }
 
 
@@ -104,7 +111,7 @@ class PopularFragment : Fragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                it.list?.let { it1 -> news?.addAll(it1) }
+                it.news?.let { it1 -> news.addAll(it1) }
                 if (noEmptyList) notifyDataChangeAdapter()
 
                 error_no_internet.visibility = View.INVISIBLE
@@ -112,7 +119,7 @@ class PopularFragment : Fragment() {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
-            .addTo(compositeDisposable)
+            //.addTo(compositeDisposable)
 
         progressHide()
     }
@@ -130,7 +137,7 @@ class PopularFragment : Fragment() {
     }
 
     private fun setErrorNoInternet() {
-        indeterminateBar.hide()
+        if (indeterminateBar.isVisible) indeterminateBar.hide()
         error_no_internet.visibility = View.VISIBLE
 
     }

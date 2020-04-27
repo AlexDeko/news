@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +17,6 @@ import com.news.data.adapters.NewsRecyclerAdapter
 import com.news.data.dto.News
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_new.*
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -26,13 +24,9 @@ import org.koin.android.ext.android.get
 
 class NewsFragment() : Fragment() {
 
-   // private var list: Photos? = null
     private var page: Int = 1
-    private var countItems = 10
-    val news: MutableList<News>? = arrayListOf()
+    val news: MutableList<News> = arrayListOf()
     private var noEmptyList = false
-    private var isEndScrolling = false
-    private var updateData = false
     private val photos: PhotosApi = get()
     private val compositeDisposable = CompositeDisposable()
 
@@ -43,19 +37,19 @@ class NewsFragment() : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_new, container, false)
-        return root
+        return inflater.inflate(R.layout.fragment_new, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         fetchData()
         setList()
 
         with(swipeRefresh) {
             setOnRefreshListener {
                 page = 1
-                news?.clear()
+                news.clear()
                 fetchData()
                 notifyDataChangeAdapter()
                 isRefreshing = false
@@ -70,7 +64,7 @@ class NewsFragment() : Fragment() {
 
             with(recyclerList) {
                 layoutManager = GridLayoutManager(requireContext(),2)
-                adapter = NewsRecyclerAdapter(news!!)
+                adapter = NewsRecyclerAdapter(news)
 
                 //adapter.it = page * countItems
 
@@ -91,17 +85,33 @@ class NewsFragment() : Fragment() {
             }
     }
 
+    fun navigate(file: String, name: String, descriptions: String){
+
+        findNavController()
+            .navigate(R.id.action_newsFragment_to_contentFragment, Bundle().apply {
+                putString("file", file)
+                putString("name", name)
+                putString("description", descriptions)
+            })
+    }
+
+    private fun changeProgressState(state: Boolean) {
+        when (state) {
+            true -> indeterminateBar.show()
+            false -> indeterminateBar.hide()
+        }
+    }
 
     private fun fetchData() {
 
-        progressShow()
+        changeProgressState(true)
 
         photos.getPhotos(page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
 
-                it.list?.let {it1 -> news?.addAll(it1) }
+                it.news?.let { it1 -> news.addAll(it1) }
                 if (noEmptyList) notifyDataChangeAdapter()
                 error_no_internet.visibility = View.INVISIBLE
 
@@ -109,37 +119,14 @@ class NewsFragment() : Fragment() {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
+           // .addTo(compositeDisposable)
 
-            .addTo(compositeDisposable)
-
-        progressHide()
+        changeProgressState(false)
 
     }
-
-//    fun navigate() {
-//        Navigation.createNavigateOnClickListener(
-//            R.id.action_popularFragment_to_contentFragment,
-//            Bundle().apply {
-//                putString("file", adapter.list[adapterPosition].image?.name)
-//                putString("name", adapter.list[adapterPosition].name)
-//                putString(
-//                    "description",
-//                    adapter.list[adapterPosition].description
-//                )
-//            })
-//       // findNavController().navigate(R.id.action_newsFragment_to_contentFragment)
-//    }
 
     private fun notifyDataChangeAdapter() {
         recyclerList.adapter?.notifyDataSetChanged()
-    }
-
-    private fun progressShow() {
-            indeterminateBar.show()
-    }
-
-    private fun progressHide(){
-            indeterminateBar.hide()
     }
 
     private fun setErrorNoInternet() {

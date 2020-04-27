@@ -23,7 +23,7 @@ class App : Application(){
             modules(
                 //listOf(
                     networkModule
-              //  )
+                //)
             )
         }
     }
