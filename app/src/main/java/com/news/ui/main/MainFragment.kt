@@ -13,8 +13,6 @@ import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment() {
 
-    //private lateinit var viewModel: MainViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -23,14 +21,6 @@ class MainFragment : Fragment() {
 
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
-
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-//        val navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
-//
-//        NavigationUI.setupWithNavController(nav_view, navController)
-//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)

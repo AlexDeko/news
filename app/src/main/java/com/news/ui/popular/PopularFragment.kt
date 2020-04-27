@@ -18,6 +18,8 @@ import com.news.R
 import com.news.client.PopularPhotosApi
 import com.news.data.adapters.NewsRecyclerAdapter
 import com.news.data.dto.News
+import com.news.ui.BaseFragment
+import com.news.utils.Utils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -28,13 +30,11 @@ import kotlinx.android.synthetic.main.fragment_popular.indeterminateBar
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.koin.android.ext.android.get
 
-class PopularFragment : Fragment() {
+class PopularFragment : BaseFragment() {
 
     private var page: Int = 1
     val news: MutableList<News> = arrayListOf()
-    private var noEmptyList = false
     private val photos: PopularPhotosApi = get()
-    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,21 +46,20 @@ class PopularFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         fetchData()
         setList()
-
-        with(swipeRefresh) {
-            setOnRefreshListener {
-                page = 1
-                news.clear()
-                fetchData()
-                notifyDataChangeAdapter()
-                isRefreshing = false
-            }
-        }
+        setSwipeRefresh()
         super.onViewCreated(view, savedInstanceState)
+    }
 
+    private fun setSwipeRefresh() {
+        swipeRefresh.setOnRefreshListener {
+            page = 1
+            news.clear()
+            fetchData()
+            notifyDataChangeAdapter()
+            swipeRefresh.isRefreshing = false
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -100,9 +99,9 @@ class PopularFragment : Fragment() {
 
         findNavController()
             .navigate(R.id.action_popularFragment_to_contentFragment, Bundle().apply {
-                putString("file", file)
-                putString("name", name)
-                putString("description", descriptions)
+                putString(Utils.file, file)
+                putString(Utils.name, name)
+                putString(Utils.description, descriptions)
             })
     }
 
@@ -144,10 +143,5 @@ class PopularFragment : Fragment() {
         if (indeterminateBar.isVisible) indeterminateBar.hide()
         error_no_internet.visibility = View.VISIBLE
 
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        compositeDisposable.clear()
     }
 }

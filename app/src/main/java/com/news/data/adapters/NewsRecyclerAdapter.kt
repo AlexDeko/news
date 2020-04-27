@@ -14,7 +14,10 @@ import kotlinx.android.synthetic.main.image_item_list.view.*
 class NewsRecyclerAdapter(val list: MutableList<News>, private val onItemClick: (News) -> Unit) :
     RecyclerView.Adapter<NewsRecyclerAdapter.NewsViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsRecyclerAdapter.NewsViewHolder =
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): NewsRecyclerAdapter.NewsViewHolder =
         NewsViewHolder(
             this,
             LayoutInflater.from(parent.context)
@@ -25,30 +28,22 @@ class NewsRecyclerAdapter(val list: MutableList<News>, private val onItemClick: 
             onItemClick = onItemClick
         )
 
-    class NewsViewHolder(private val adapter: NewsRecyclerAdapter, view: View, onItemClick: (News) -> Unit) :
+    class NewsViewHolder(
+        private val adapter: NewsRecyclerAdapter,
+        view: View,
+        onItemClick: (News) -> Unit
+    ) :
         RecyclerView.ViewHolder(view) {
         init {
             itemView.imageView.setOnClickListener {
                 onItemClick(adapter.list[adapterPosition])
-
-//                    NewsFragment().navigate(
-//                        adapter.list[adapterPosition].image?.name!!,
-//                        adapter.list[adapterPosition].name!!,
-//                        adapter.list[adapterPosition].description!!
-//                    )
-//                 PopularFragment().navigate(
-//                    adapter.list[adapterPosition].image?.name!!,
-//                    adapter.list[adapterPosition].name!!,
-//                    adapter.list[adapterPosition].description!!
-//                )
             }
-
         }
 
-        fun bind(news: News) {
+        fun bind() {
             with(itemView) {
                 Glide.with(context)
-                    .load("https://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name.toString()}")
+                    .load("http://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name.toString()}")
                     .placeholder(R.drawable.ic_launcher_background)
                     .into(imageView)
             }
@@ -59,8 +54,8 @@ class NewsRecyclerAdapter(val list: MutableList<News>, private val onItemClick: 
 
     override fun getItemId(position: Int) = list[position].id.toLong()
 
-    override fun onBindViewHolder(holder: NewsRecyclerAdapter.NewsViewHolder , position: Int) {
-        holder.bind(list[position])
+    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
+        holder.bind()
 
     }
 }

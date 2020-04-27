@@ -17,6 +17,8 @@ import com.news.R
 import com.news.client.PhotosApi
 import com.news.data.adapters.NewsRecyclerAdapter
 import com.news.data.dto.News
+import com.news.ui.BaseFragment
+import com.news.utils.Utils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -25,14 +27,11 @@ import kotlinx.android.synthetic.main.fragment_new.*
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.koin.android.ext.android.get
 
-class NewsFragment() : Fragment() {
+class NewsFragment() : BaseFragment() {
 
     private var page: Int = 1
     val news: MutableList<News> = arrayListOf()
-    private var isListNotEmpty = false
     private val photos: PhotosApi = get()
-    private val compositeDisposable = CompositeDisposable()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,20 +43,20 @@ class NewsFragment() : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         fetchData()
         setList()
-
-        with(swipeRefresh) {
-            setOnRefreshListener {
-                page = 1
-                news.clear()
-                fetchData()
-                notifyDataChangeAdapter()
-                isRefreshing = false
-            }
-        }
+        setSwipeRefresh()
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun setSwipeRefresh() {
+        swipeRefresh.setOnRefreshListener {
+            page = 1
+            news.clear()
+            fetchData()
+            notifyDataChangeAdapter()
+            swipeRefresh.isRefreshing = false
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -87,14 +86,12 @@ class NewsFragment() : Fragment() {
         }
     }
 
-    fun navigate(file: String, name: String, descriptions: String) {
-
-
+    private fun navigate(file: String, name: String, descriptions: String) {
         findNavController()
             .navigate(R.id.action_newsFragment_to_contentFragment, Bundle().apply {
-                putString("file", file)
-                putString("name", name)
-                putString("description", descriptions)
+                putString(Utils.file, file)
+                putString(Utils.name, name)
+                putString(Utils.description, descriptions)
             })
     }
 
@@ -106,7 +103,6 @@ class NewsFragment() : Fragment() {
     }
 
     private fun fetchData() {
-
         changeProgressState(true)
 
         photos.getPhotos(page)
@@ -126,7 +122,6 @@ class NewsFragment() : Fragment() {
             .addTo(compositeDisposable)
 
         changeProgressState(false)
-
     }
 
     private fun notifyDataChangeAdapter() {
@@ -137,10 +132,4 @@ class NewsFragment() : Fragment() {
         indeterminateBar.hide()
         error_no_internet.visibility = View.VISIBLE
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        compositeDisposable.clear()
-    }
-
 }
