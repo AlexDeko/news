@@ -17,6 +17,7 @@ import com.news.data.adapters.NewsRecyclerAdapter
 import com.news.data.dto.News
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_new.*
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -26,16 +27,15 @@ class NewsFragment() : Fragment() {
 
     private var page: Int = 1
     val news: MutableList<News> = arrayListOf()
-    private var noEmptyList = false
+    private var isListNotEmpty = false
     private val photos: PhotosApi = get()
     private val compositeDisposable = CompositeDisposable()
 
 
-
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_new, container, false)
     }
@@ -60,32 +60,26 @@ class NewsFragment() : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setList() {
-
-
-            with(recyclerList) {
-                layoutManager = GridLayoutManager(requireContext(),2)
-                adapter = NewsRecyclerAdapter(news)
-
-                //adapter.it = page * countItems
-
-                val scrollListener = object : RecyclerView.OnScrollListener() {
-
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        val layoutManager: GridLayoutManager =
-                            recyclerView.layoutManager as GridLayoutManager
-                        layoutManager.findLastVisibleItemPosition()
-                        if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1) {
-                            page++
-                            fetchData()
-                        }
+        with(recyclerList) {
+            layoutManager = GridLayoutManager(requireContext(), 2)
+            adapter = NewsRecyclerAdapter(news)
+            val scrollListener = object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val layoutManager: GridLayoutManager =
+                        recyclerView.layoutManager as GridLayoutManager
+                    layoutManager.findLastVisibleItemPosition()
+                    if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1) {
+                        page++
+                        fetchData()
                     }
                 }
-               addOnScrollListener(scrollListener)
             }
+            addOnScrollListener(scrollListener)
+        }
     }
 
-    fun navigate(file: String, name: String, descriptions: String){
+    fun navigate(file: String, name: String, descriptions: String) {
 
         findNavController()
             .navigate(R.id.action_newsFragment_to_contentFragment, Bundle().apply {
@@ -109,17 +103,18 @@ class NewsFragment() : Fragment() {
         photos.getPhotos(page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doFinally {
+                changeProgressState(false)
+            }
             .subscribe({
-
                 it.news?.let { it1 -> news.addAll(it1) }
-                if (noEmptyList) notifyDataChangeAdapter()
+                notifyDataChangeAdapter()
                 error_no_internet.visibility = View.INVISIBLE
-
             }, {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
-           // .addTo(compositeDisposable)
+         .addTo(compositeDisposable)
 
         changeProgressState(false)
 
@@ -130,19 +125,13 @@ class NewsFragment() : Fragment() {
     }
 
     private fun setErrorNoInternet() {
-            indeterminateBar.hide()
-            error_no_internet.visibility = View.VISIBLE
-
+        indeterminateBar.hide()
+        error_no_internet.visibility = View.VISIBLE
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
+        super.onDestroyView()
         compositeDisposable.clear()
-    }
-
-    @InternalCoroutinesApi
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
 }

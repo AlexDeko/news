@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +41,7 @@ class PopularFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_popular, container, false)
-        return root
+        return inflater.inflate(R.layout.fragment_popular, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -67,31 +67,30 @@ class PopularFragment : Fragment() {
     private fun setList() {
         with(recyclerListPopular) {
             layoutManager = GridLayoutManager(context, 2)
-            adapter = NewsRecyclerAdapter( news)
+            adapter = NewsRecyclerAdapter(news)
 
-            val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
+            val scrollListener: RecyclerView.OnScrollListener =
+                object : RecyclerView.OnScrollListener() {
 
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
 
+                        val layoutManager: GridLayoutManager =
+                            recyclerView.layoutManager as GridLayoutManager
+                        layoutManager.findLastVisibleItemPosition()
 
+                        if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1) {
+                            page++
 
-                    val layoutManager: GridLayoutManager =
-                        recyclerView.layoutManager as GridLayoutManager
-                    layoutManager.findLastVisibleItemPosition()
-
-                    if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1) {
-                        page++
-
-                        fetchData()
+                            fetchData()
+                        }
                     }
                 }
-            }
             addOnScrollListener(scrollListener)
         }
     }
 
-    fun navigate(file: String, name: String, descriptions: String){
+    fun navigate(file: String, name: String, descriptions: String) {
 
         findNavController()
             .navigate(R.id.action_popularFragment_to_contentFragment, Bundle().apply {
@@ -103,37 +102,36 @@ class PopularFragment : Fragment() {
 
 
     private fun fetchData() {
-        progressShow()
+        changeProgressState(true)
 
-        photos.getPhotos(page).repeatUntil {
-            false
-        }
+        photos.getPhotos(page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doFinally {
+                changeProgressState(false)
+            }
             .subscribe({
                 it.news?.let { it1 -> news.addAll(it1) }
-                if (noEmptyList) notifyDataChangeAdapter()
-
+                notifyDataChangeAdapter()
                 error_no_internet.visibility = View.INVISIBLE
             }, {
                 setErrorNoInternet()
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
-            //.addTo(compositeDisposable)
+        .addTo(compositeDisposable)
 
-        progressHide()
+        changeProgressState(false)
     }
 
     private fun notifyDataChangeAdapter() {
         recyclerListPopular.adapter?.notifyDataSetChanged()
     }
 
-    private fun progressShow() {
-        indeterminateBar.show()
-    }
-
-    private fun progressHide() {
-        indeterminateBar.hide()
+    private fun changeProgressState(state: Boolean) {
+        when (state) {
+            true -> indeterminateBar.show()
+            false -> indeterminateBar.hide()
+        }
     }
 
     private fun setErrorNoInternet() {
@@ -142,13 +140,8 @@ class PopularFragment : Fragment() {
 
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
+        super.onDestroyView()
         compositeDisposable.clear()
-    }
-
-    @InternalCoroutinesApi
-    override fun onDestroy() {
-        super.onDestroy()
     }
 }

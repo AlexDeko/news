@@ -10,7 +10,8 @@ data class Photos(
     @SerializedName("countOfPages")
     var countOfPages: Int = 0,
     @SerializedName("data")
-    val news: List<News>?) {
+    val news: List<News>?
+) {
 
 }
 
