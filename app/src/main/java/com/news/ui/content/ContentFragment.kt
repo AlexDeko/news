@@ -32,21 +32,25 @@ class ContentFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private fun setContent() {
-        var url = "http://gallery.dev.webant.ru/media/"
-        arguments?.let {
-            url = "http://gallery.dev.webant.ru/media/${it.getString("file").toString()}"
-            titleContentNews.text = it.getString("name").toString()
-            text.text = it.getString("description").toString()
-        }
-
-        try {
-                Glide.with(this)
-                    .load(url)
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .into(contentNewsImageView)
-
-        } catch (e: Exception) {
-            Toast.makeText(context, R.string.errorContent, Toast.LENGTH_SHORT).show()
-        }
+        if (arguments != null)
+            loadImage()
+        else
+            showError()
     }
+
+    private fun loadImage() {
+        val url = "http://gallery.dev.webant.ru/media/${arguments?.getString("file").toString()}"
+        titleContentNews.text = arguments?.getString("name").toString()
+        text.text = arguments?.getString("description").toString()
+
+        Glide.with(this)
+            .load(url)
+            .placeholder(R.drawable.ic_launcher_background)
+            .into(contentNewsImageView)
+
+
+    }
+
+    private fun showError() =
+        Toast.makeText(context, R.string.errorContent, Toast.LENGTH_SHORT).show()
 }

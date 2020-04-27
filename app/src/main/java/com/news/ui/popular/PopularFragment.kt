@@ -66,7 +66,7 @@ class PopularFragment : Fragment() {
     private fun setList() {
         with(recyclerListPopular) {
             layoutManager = GridLayoutManager(context, 2)
-            adapter = NewsRecyclerAdapter(requireContext(), news!!)
+            adapter = NewsRecyclerAdapter( news!!)
 
             val scrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
 
@@ -78,19 +78,20 @@ class PopularFragment : Fragment() {
 //                        fetchData()
 //                    }
 
-                    val manage: GridLayoutManager =
+                    val layoutManager: GridLayoutManager =
                         recyclerView.layoutManager as GridLayoutManager
-                    manage.findLastVisibleItemPosition()
+                    layoutManager.findLastVisibleItemPosition()
 
-                    if (manage.findLastVisibleItemPosition() >= manage.itemCount - 1) {
+                    if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1) {
                         page++
+
                         fetchData()
                     }
                 }
             }
             addOnScrollListener(scrollListener)
         }
-        noEmptyList = true
+       // noEmptyList = true
     }
 
 

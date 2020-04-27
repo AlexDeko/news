@@ -21,9 +21,9 @@ class App : Application(){
             androidContext(this@App)
 
             modules(
-                listOf(
+                //listOf(
                     networkModule
-                )
+              //  )
             )
         }
     }

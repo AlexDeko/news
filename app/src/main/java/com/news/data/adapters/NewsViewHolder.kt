@@ -14,38 +14,38 @@ import kotlinx.android.synthetic.main.image_item_list.view.*
 class NewsViewHolder(adapter: NewsRecyclerAdapter, view: View) : BaseViewHolder(adapter, view) {
     init {
         with(itemView) {
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                imageView.setOnClickListener {
-                    if (adapterPosition != RecyclerView.NO_POSITION) {
-                        if (adapter.context == PopularFragment::getContext)
-                            Navigation.createNavigateOnClickListener(
-                                R.id.action_popularFragment_to_contentFragment,
-                                Bundle().apply {
-                                    putString("file", adapter.list[adapterPosition].image?.name)
-                                    putString("name", adapter.list[adapterPosition].name)
-                                    putString(
-                                        "description",
-                                        adapter.list[adapterPosition].description
-                                    )
-                                })
-                        else Navigation.createNavigateOnClickListener(
-                            R.id.action_newsFragment_to_contentFragment,
-                            Bundle().apply {
-                                putString("file", adapter.list[adapterPosition].image?.name)
-                                putString("name", adapter.list[adapterPosition].name)
-                                putString("description", adapter.list[adapterPosition].description)
-                            })
-                    }
-                }
+
+            imageView.setOnClickListener {
+
+                // if (adapter.context == PopularFragment::getContext)
+                Navigation.createNavigateOnClickListener(
+                    R.id.action_popularFragment_to_contentFragment,
+                    Bundle().apply {
+                        putString("file", adapter.list[adapterPosition].image?.name)
+                        putString("name", adapter.list[adapterPosition].name)
+                        putString(
+                            "description",
+                            adapter.list[adapterPosition].description
+                        )
+                    })
+//                        else Navigation.createNavigateOnClickListener(
+//                            R.id.action_newsFragment_to_contentFragment,
+//                            Bundle().apply {
+//                                putString("file", adapter.list[adapterPosition].image?.name)
+//                                putString("name", adapter.list[adapterPosition].name)
+//                                putString("description", adapter.list[adapterPosition].description)
+//                            })
+
             }
         }
+
     }
 
 
     override fun bind(news: News) {
         with(itemView) {
-            Glide.with(adapter.context)
-                .load("https://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name}")
+            Glide.with(itemView.context)
+                .load("https://gallery.dev.webant.ru/media/${adapter.list[adapterPosition].image?.name.toString()}")
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(imageView)
         }

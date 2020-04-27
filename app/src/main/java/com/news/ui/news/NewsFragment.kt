@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.news.R
@@ -68,7 +70,7 @@ class NewsFragment() : Fragment() {
 
             with(recyclerList) {
                 layoutManager = GridLayoutManager(requireContext(),2)
-                adapter = NewsRecyclerAdapter(context.applicationContext, news!!)
+                adapter = NewsRecyclerAdapter(news!!)
 
                 //adapter.it = page * countItems
 
@@ -76,25 +78,17 @@ class NewsFragment() : Fragment() {
 
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
-
-//                        if (!recyclerView.canScrollVertically(1)) {
-//                            fetchData()
-//                        }
-
-                        val manage: GridLayoutManager =
+                        val layoutManager: GridLayoutManager =
                             recyclerView.layoutManager as GridLayoutManager
-                        manage.findLastVisibleItemPosition()
-
-                        if (manage.findLastVisibleItemPosition() >= manage.itemCount - 1) {
+                        layoutManager.findLastVisibleItemPosition()
+                        if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1) {
                             page++
-
                             fetchData()
                         }
                     }
                 }
                addOnScrollListener(scrollListener)
             }
-        noEmptyList = true
     }
 
 
@@ -102,14 +96,12 @@ class NewsFragment() : Fragment() {
 
         progressShow()
 
-        photos.getPhotos(page).repeatUntil {
-            false
-        }
+        photos.getPhotos(page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
 
-                it.list?.let { it1 -> news?.addAll(it1) }
+                it.list?.let {it1 -> news?.addAll(it1) }
                 if (noEmptyList) notifyDataChangeAdapter()
                 error_no_internet.visibility = View.INVISIBLE
 
@@ -123,6 +115,20 @@ class NewsFragment() : Fragment() {
         progressHide()
 
     }
+
+//    fun navigate() {
+//        Navigation.createNavigateOnClickListener(
+//            R.id.action_popularFragment_to_contentFragment,
+//            Bundle().apply {
+//                putString("file", adapter.list[adapterPosition].image?.name)
+//                putString("name", adapter.list[adapterPosition].name)
+//                putString(
+//                    "description",
+//                    adapter.list[adapterPosition].description
+//                )
+//            })
+//       // findNavController().navigate(R.id.action_newsFragment_to_contentFragment)
+//    }
 
     private fun notifyDataChangeAdapter() {
         recyclerList.adapter?.notifyDataSetChanged()
