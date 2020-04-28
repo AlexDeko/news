@@ -33,6 +33,7 @@ class NewsFragment() : BaseFragment() {
     private var page: Int = 1
     val news: MutableList<News> = arrayListOf()
     private val photos: PhotosApi = get()
+    private var isEndPage: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,10 +77,12 @@ class NewsFragment() : BaseFragment() {
                     super.onScrolled(recyclerView, dx, dy)
                     val layoutManager: GridLayoutManager =
                         recyclerView.layoutManager as GridLayoutManager
-                    layoutManager.findLastVisibleItemPosition()
-                    if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1) {
+                    if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1 &&
+                        isEndPage
+                    ) {
                         page++
                         fetchData()
+                        isEndPage = false
                     }
                 }
             }
@@ -112,6 +115,7 @@ class NewsFragment() : BaseFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally {
                     changeProgressState(false)
+                    isEndPage = true
                 }
                 .subscribe({ photos ->
                     photos.news?.let { news.addAll(it) }
