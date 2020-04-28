@@ -84,12 +84,12 @@ class PopularFragment : BaseFragment() {
 
                         val layoutManager: GridLayoutManager =
                             recyclerView.layoutManager as GridLayoutManager
-                        if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1 &&
-                            isEndPage
+                        if (layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 1
+                            && isEndPage
                         ) {
                             page++
-
                             fetchData()
+                            isEndPage = false
                         }
                     }
                 }
